@@ -1,0 +1,50 @@
+# Compiled object files
+*.o
+*.lo
+*.la
+*.slo
+
+# libtool and build files
+.libs/
+.deps/
+*.dep
+
+# PHP extension outputs
+modules/
+*.so
+
+# General
+*.csv
+
+# autotools outputs
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache/
+config.h
+config.h.in
+config.log
+config.status
+configure
+ltmain.sh
+missing
+install-sh
+depcomp
+
+Makefile.fragments
+Makefile.objects
+config.nice
+libtool
+
+# Clean up PHP dev artifacts
+/build/
+php_ext.h
+php_ext.lo
+php_ext.la
+
+# Editor/OS clutter
+*~
+*.swp
+.DS_Store
+.vscode/
+.idea/
