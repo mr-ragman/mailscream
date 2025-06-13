@@ -3,6 +3,14 @@
 *.lo
 *.la
 *.slo
+*.obj
+*.exe
+*.out
+a.out
+
+# Debug files
+*.dSYM/
+*.pdb
 
 # libtool and build files
 .libs/
@@ -45,6 +53,9 @@ php_ext.la
 # Editor/OS clutter
 *~
 *.swp
+*.swo
 .DS_Store
 .vscode/
 .idea/
+zz_*
+mailscream
