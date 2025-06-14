@@ -44,3 +44,19 @@ int is_help_command(const char *arg)
 {
   return strcmp(arg, "help") == 0 || strcmp(arg, "-h") == 0 || strcmp(arg, "--help") == 0;
 }
+
+void suggest_help_manual(char *command_name)
+{
+  if (command_name == NULL)
+  {
+    puts("Run `mailscream help` for more options.\n");
+  }
+  else if (strcmp(command_name, "new") == 0)
+  {
+    puts("Usage: mailscream [--no-reply] bossname \"your message\". Or run `mailscream help` for more options.\n");
+  }
+  else
+  {
+    puts("Run `mailscream help` for more options.\n");
+  }
+}
