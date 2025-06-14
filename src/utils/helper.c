@@ -14,12 +14,14 @@ void show_help()
   puts("| |  | | (_| | | /\\__/ / (__| | |  __/ (_| | | | | | |");
   puts("\\_|  |_/\\__,_|_|_\\____/ \\___|_|  \\___|\\__,_|_| |_| |_|");
   puts("------------------------------------------------------");
-  puts("They may not care, but your catharsis doesn't need permission!.\n\n");
+  puts("They may not care, but your catharsis needs no permission!\n\n");
 
-  puts("mailscream <command> [--options] [arguments]\n");
+  printf("🚀 Scream instantly!\n\n");
+  puts("mailscream [--options] bossname message\n");
+
+  printf("⚙️ More actions:\n\n");
+  puts("mailscream <command> [--options] <arguments, ...>\n");
   printf("📬 \033[1;33mCommands:\033[0m\n\n");
-  printf("  \033[1;36mflush, f \033[0m               Flush your emotions and Let your boss reply hysterically!\n");
-  puts("                          Usage: mailscream f [--options] [bossname] [message]\n");
   printf("  \033[1;36mreply, rp\033[0m               Reply to an earlier conversation/email with a given ID\n");
   puts("                          Usage: mailscream rp <ID> [message]\n");
   printf("  \033[1;36mread, r\033[0m                 Read the full email thread with the given ID\n");
