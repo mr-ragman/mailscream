@@ -7,4 +7,6 @@ void show_help();
 
 void suggest_help_manual(char *command_name);
 
+void display(char *header, char *message);
+
 #endif

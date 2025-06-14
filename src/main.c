@@ -2,6 +2,7 @@
 #include <string.h>
 #include "utils/helper.h"
 #include "vault/vault.h"
+#include "commands/persona.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +13,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
+  // vault/db management
   if (strcmp(argv[1], "vault") == 0)
   {
     if (argc < 3)
@@ -34,8 +36,20 @@ int main(int argc, char *argv[])
   // We should always DB ready
   ensure_vault_ready();
 
-  printf("Unknown command: %s\n", argv[1]);
-  show_help();
+  // add personas
+  if (argc >= 2 && argc <= 5 && (strcmp(argv[1], "persona") == 0 || strcmp(argv[1], "p") == 0))
+  {
+    // automatically list current personas
+    if (argc == 2)
+      argv[2] = "list";
+
+    manage_persona(argc, argv);
+
+    return 0;
+  }
+
+  printf("\nUnknown command [%s] or incorrect number of arguments passed.\n", argv[1]);
+  suggest_help_manual(NULL);
 
   return 0;
 }
