@@ -14,19 +14,27 @@ void show_help()
   puts("| |  | | (_| | | /\\__/ / (__| | |  __/ (_| | | | | | |");
   puts("\\_|  |_/\\__,_|_|_\\____/ \\___|_|  \\___|\\__,_|_| |_| |_|");
   puts("------------------------------------------------------");
-  puts("When your boss can't hear your scream but you write it anyway!.\n\n");
+  puts("They may not care, but your catharsis doesn't need permission!.\n\n");
 
+  puts("mailscream <command> [--options] [arguments]\n");
   printf("📬 \033[1;33mCommands:\033[0m\n\n");
-  printf("  \033[1;36mscream, s [bossname] [message]\033[0m          Flush your emotions. Let the boss reply hysterically!\n");
-  printf("  \033[1;36mreply, rp <id>\033[0m                          Reply to an earlier conversation/email with a given ID\n");
-  printf("  \033[1;36mread, r <id>\033[0m                            Read the full email thread with the given ID\n");
-  printf("  \033[1;36mlist, l\033[0m                                 Show all your stored emails\n");
-  printf("  \033[1;36mvault [init | drop] \033[0m                    Initialize or drop your local scream vault\n");
-  printf("  \033[1;36mhelp, -h, --help\033[0m                        Show this help screen\n");
+  printf("  \033[1;36mflush, f \033[0m               Flush your emotions and Let your boss reply hysterically!\n");
+  puts("                          Usage: mailscream f [--options] [bossname] [message]\n");
+  printf("  \033[1;36mreply, rp\033[0m               Reply to an earlier conversation/email with a given ID\n");
+  puts("                          Usage: mailscream rp <ID> [message]\n");
+  printf("  \033[1;36mread, r\033[0m                 Read the full email thread with the given ID\n");
+  puts("                          Usage: mailscream r <ID>\n");
+  printf("  \033[1;36mlist, l\033[0m                 Show all your stored emails\n");
+  puts("                          Usage: mailscream l\n");
+  printf("  \033[1;36mvault \033[0m                  Initialize or drop your local scream vault\n");
+  puts("                          Usage: mailscream vault [init | drop]\n");
+  printf("  \033[1;36mhelp, -h, --help\033[0m        Show this help screen\n");
+  puts("                          Usage: mailscream help\n");
 
   // options
-  printf("\n\n📬 \033[1;33mOptions:\033[0m\n\n");
-  printf("  \033[1;36m--no-reply, -nr\033[0m    Scream without reply from the mad boss. All power to you!!\n\n");
+  printf("\n📬 \033[1;33mOptions:\033[0m\n\n");
+  printf("  \033[1;36m--no-reply, -nr\033[0m    Your quiet emotional flush - No replies today!\n");
+  puts("                     Usage: mailscream s -nr [bossname] [message]\n");
   printf("\n🔥 \033[3mWrite it. Send it. Feel better.\033[0m\n\n");
 }
 
