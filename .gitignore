@@ -23,6 +23,7 @@ modules/
 
 # General
 *.csv
+*.db
 
 # autotools outputs
 Makefile

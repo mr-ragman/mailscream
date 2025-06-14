@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS bosses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    persona TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS emails (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    boss_id INTEGER NOT NULL,
+    parent_id INTEGER,
+    body TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (boss_id) REFERENCES bosses(id)
+    FOREIGN KEY (parent_id) REFERENCES emails(id)
+);
