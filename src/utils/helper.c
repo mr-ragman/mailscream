@@ -1,9 +1,10 @@
 #include <stdlib.h>
-#include <stdio.h>
+#include <stdio.h>     // PATH_MAX, readlink, strdup all available
 #include <string.h>
 #include <libgen.h>
 #include <limits.h>
-#include <stdint.h> // uint32_t and other fixed-width types
+#include <unistd.h>    // POSIX - For readlink()
+#include <stdint.h>    // uint32_t and other fixed-width types
 
 #include "helper.h"
 
@@ -123,7 +124,6 @@ char *get_executable_dir()
   if (!path)
     return NULL;
 
-#if defined(__linux__)
   ssize_t count = readlink("/proc/self/exe", path, PATH_MAX - 1);
   if (count == -1)
   {
@@ -131,21 +131,6 @@ char *get_executable_dir()
     return NULL;
   }
   path[count] = '\0';
-#elif defined(__APPLE__)
-  uint32_t size = PATH_MAX;
-  if (_NSGetExecutablePath(path, &size) != 0)
-  {
-    free(path);
-    return NULL;
-  }
-  // Resolve any symlinks
-  char *real_path = realpath(path, NULL);
-  free(path);
-  path = real_path;
-#else
-  free(path);
-  return NULL;
-#endif
 
   // Step 2: Extract directory (strip filename)
   char *dir = dirname(path); // dirname() modifies the input string!
