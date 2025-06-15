@@ -24,6 +24,7 @@ modules/
 # General
 *.csv
 *.db
+*.log
 
 # autotools outputs
 Makefile
@@ -51,12 +52,15 @@ php_ext.h
 php_ext.lo
 php_ext.la
 
-# Editor/OS clutter
+# Dev/Editor/OS clutter
 *~
 *.swp
 *.swo
 .DS_Store
 .vscode/
 .idea/
+
+build.sh
+*.devnotes
 zz_*
-mailscream
+mailscream*
