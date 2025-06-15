@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
   }
 
   // vault/db management
-  if (strcmp(argv[1], "vault") == 0)
+  if (strcmp(argv[1], "vault") == 0 || strcmp(argv[1], "db") == 0)
   {
     if (argc < 3)
     {
@@ -43,9 +43,7 @@ int main(int argc, char *argv[])
     if (argc == 2)
       argv[2] = "list";
 
-    manage_persona(argc, argv);
-
-    return 0;
+    return manage_persona(argc, argv);
   }
 
   printf("\nUnknown command [%s] or incorrect number of arguments passed.\n", argv[1]);
