@@ -61,3 +61,4 @@ void free_personas_list(PersonaList *list);
 void free_persona(Persona *persona);
 
 char *get_migration_path(void);
+#endif
