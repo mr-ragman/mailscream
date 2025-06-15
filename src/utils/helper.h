@@ -1,6 +1,9 @@
 #ifndef HELP_H
 #define HELP_H
 
+#define BOLD "\033[1m"
+#define RESET "\033[0m"
+
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 200112L // Required for PATH_MAX on some systems
 #endif

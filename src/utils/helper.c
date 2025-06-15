@@ -18,13 +18,15 @@ void show_help()
   puts("------------------------------------------------------");
   puts("They may not care, but your catharsis needs no permission!\n\n");
 
-  printf("🚀 Scream instantly!\n\n");
-  puts("mailscream [--options] <persona_name> \"your message\"\n");
-  puts("mailscream [--options] <persona_id> \"your message\"\n");
+  puts(" =====================");
+  printf(" " BOLD "[ Scream instantly! ]" RESET "\n");
+  puts(" =====================\n");
+  puts(" - mailscream [--options] <persona_name> \"your message\"\n");
+  puts(" - mailscream [--options] <persona_id> \"your message\"\n");
 
-  printf("\n⚙️ More actions:\n\n");
-  puts("mailscream <command> [--options] <arguments, ...>\n");
-  printf("📬 \033[1;33mCommands:\033[0m\n\n");
+  printf("\n " BOLD "[ More actions: ]" RESET "\n\n");
+  puts("  mailscream <command> [--options] <arguments, ...>\n");
+  printf("\n  \033[1;33mCommands:\033[0m\n\n");
   printf("  \033[1;36mpersona, p\033[0m              Manage your scream personas\n");
   puts("                          Usage: mailscream p [list | add <persona_name> \"short description\" | remove <ID>]\n");
   printf("  \033[1;36mreply, rp\033[0m               Reply to an earlier conversation/email with a given ID\n");
@@ -39,10 +41,9 @@ void show_help()
   puts("                          Usage: mailscream help\n");
 
   // options
-  printf("\n📬 \033[1;33mOptions:\033[0m\n\n");
+  printf("  \033[1;33mOptions:\033[0m\n\n");
   printf("  \033[1;36m--no-reply, -nr\033[0m    Your quiet emotional flush - No replies today!\n");
   puts("                     Usage: mailscream s -nr <name> \"your message\"\n");
-  printf("\n🔥 \033[3mWrite it. Send it. Feel better.\033[0m\n\n");
 }
 
 /**
