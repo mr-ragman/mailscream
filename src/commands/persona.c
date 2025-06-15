@@ -37,14 +37,14 @@ int manage_persona(int argc, char **argv)
   {
     if (persona_name == NULL || strchr(persona_name, ' '))
     {
-      display("Oops! Persona name cannot be empty or contain spaces.", "\nPlease use short names like: moody_boss, ChadBoss69, Karen.exe, etc");
+      display("[Oops!] Persona name cannot be empty or contain spaces.", "\nPlease use short names like: moody_boss, ChadBoss69, Karen.exe, etc");
       suggest_help_manual("persona");
       return 1;
     }
 
     if (persona_description == NULL || strlen(persona_description) <= 0)
     {
-      display("Oops! Describe your persona.", "\nGive a short description of this persona! e.g Thinks she's the CEO because she's been here 'since day one'.");
+      display("[Oops!] Describe your persona.", "\nGive a short description of this persona! e.g Thinks she's the CEO because she's been here 'since day one'.");
       suggest_help_manual("persona");
       return 1;
     }
@@ -53,12 +53,12 @@ int manage_persona(int argc, char **argv)
 
     if (result == VAULT_SUCCESS)
     {
-      printf("\n***Boom!*** Persona '%s' has joined the scream list. Ready to vent?\n\n", persona_name);
+      printf("\n[SUCCESS] Persona '%s' added to scream list. Ready to vent?\n\n", persona_name);
       suggest_help_manual("new");
       return 0;
     }
 
-    display("Oops! Something went wrong.", "\nPlease to try to add them again.");
+    display("[Oops!] Something went wrong while adding your persona.", "\nPlease ensure your persona name is unique and try again.");
     return 1;
   }
   else if (strcmp(action, "remove") == 0 && argc == 4)
@@ -67,11 +67,11 @@ int manage_persona(int argc, char **argv)
 
     if (result == VAULT_SUCCESS)
     {
-      printf("\n***Gone!*** Persona ID '%d' removed from your scream list.\n\n", persona_id);
+      printf("\n[GONE!] Persona ID '%d' removed from your scream list.\n\n", persona_id);
       return _list_personas();
     }
 
-    display("Oops! Something went wrong.", "\nPlease to try to add them again.");
+    display("[Oops!] Something went wrong.", "\nPlease to try to add them again.");
     return 1;
   }
   else
