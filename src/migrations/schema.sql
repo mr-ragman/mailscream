@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS bosses (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL,
+    username TEXT NOT NULL UNIQUE,
     persona TEXT NOT NULL
 );
 

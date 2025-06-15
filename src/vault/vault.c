@@ -9,14 +9,24 @@
 #include "vault.h"
 #include "../utils/helper.h"
 
-const char *MIGRATION_FILE = "./vault/migration.sql";
-
-const char *DB_PATH = "./mailscream.db";
+char *MIGRATION_FILE = "/migrations/schema.sql";
+const char *DB_PATH = "/mailscream.db";
 
 sqlite3 *db_connection()
 {
+  char *path = get_full_path(DB_PATH);
+  if (!path || path == NULL)
+  {
+    free(path);
+    fprintf(stderr, "\n[ERROR] Oops! Unable to build sqlite database file\n\n");
+    return NULL;
+  }
+
   sqlite3 *db;
-  int rc = sqlite3_open(DB_PATH, &db);
+  int rc = sqlite3_open(path, &db);
+
+  // free path
+  free(path);
 
   if (rc != SQLITE_OK)
   {
@@ -30,24 +40,47 @@ sqlite3 *db_connection()
 
 int vault_exists()
 {
-  return access(DB_PATH, F_OK) == 0;
+  char *path = get_full_path(DB_PATH);
+  if (!path || path == NULL)
+  {
+    free(path);
+    fprintf(stderr, "\n[ERROR] Oops! Unable to build sqlite database file\n\n");
+    return 0;
+  }
+
+  int result = access(path, F_OK) == 0;
+  free(path);
+
+  return result;
 }
 
 int vault_init()
 {
   if (vault_exists())
   {
-    printf("\n📦 Vault already exists at: %s\n", DB_PATH);
-    puts("Use `mailscream help` for more options. Enjoy! \n\n");
+    puts("\n[OK] Vault already exists");
+    puts("\nUse `mailscream help` for more options. Enjoy! \n\n");
     return 0;
   }
 
-  FILE *file = fopen(MIGRATION_FILE, "r");
-  if (!file)
+  char *path = get_full_path(MIGRATION_FILE);
+  if (!path || path == NULL)
   {
-    fprintf(stderr, "❌ Failed to open %s\n", MIGRATION_FILE);
+    free(path);
+    fprintf(stderr, "\n[ERROR] Oops! Unable to identify database schema file\n\n");
     return 1;
   }
+
+  FILE *file = fopen(path, "r");
+  if (!file)
+  {
+    fprintf(stderr, "\n[ERROR] Oops! Failed to open migration file%s\n\n", path);
+    free(path);
+    return 1;
+  }
+
+  // we don't need path anymore
+  free(path);
 
   // get file size
   fseek(file, 0, SEEK_END);
@@ -80,7 +113,8 @@ int vault_init()
     return 1;
   }
 
-  printf("OK: Vault initialized at: %s\n\n", DB_PATH);
+  printf("\n[SUCCESS]: Your local vault has been initialized successfully.\n\n");
+  suggest_help_manual(NULL);
   sqlite3_close(db);
   free(sql);
   return 0;
@@ -88,38 +122,42 @@ int vault_init()
 
 int vault_drop()
 {
-  if (!vault_exists())
+  char *path = get_full_path(DB_PATH);
+  if (!path || path == NULL)
   {
-    printf("ℹ️ No vault to drop at: %s\n", DB_PATH);
-    return 0;
+    free(path);
+    fprintf(stderr, "\n[ERROR] Oops! Unable to identify database file\n\n");
+    return 1;
   }
 
-  printf("⚠️ Are you sure you want to drop the vault? This cannot be undone. [y/N]: ");
+  puts("[WARNING] Are you sure you want to drop your local vault? This cannot be undone. [y/N]: ");
   char confirm;
   scanf(" %c", &confirm);
   if (confirm != 'y' && confirm != 'Y')
   {
-    printf("❌ Drop aborted.\n");
+    puts("\n[ERROR] Drop aborted.\n");
     return 1;
   }
 
-  if (unlink(DB_PATH) == 0)
+  if (unlink(path) == 0)
   {
-    printf("🗑️ Vault dropped from: %s\n", DB_PATH);
+    puts("\n[DROPPED] Vault dropped successfully!\n");
+    free(path);
     return 0;
   }
-  else
-  {
-    perror("❌ Failed to drop vault");
-    return 1;
-  }
+
+  perror("\n[ERROR] Failed to drop vault");
+  vault_help();
+  puts("");
+  free(path);
+  return 1;
 }
 
 void ensure_vault_ready()
 {
   if (!vault_exists())
   {
-    printf("🚨 Vault not found.\n");
+    puts("\n[ERROR] Oops, You have not yet initialized your local Vault (Database).\n");
     vault_help();
     exit(1);
   }
@@ -127,10 +165,16 @@ void ensure_vault_ready()
 
 void vault_help()
 {
-  puts("Use: vault [init | drop] or run `mailscream help` for more options.\n");
+  suggest_help_manual("vault");
 }
 
-// Manage Persona
+// ====================
+//    Manage Persona
+// ====================
+
+/**
+ * client must free the list or call free_personas_list(PersonaList $personalist) for safety
+ */
 PersonaList *get_personas(void)
 {
   sqlite3 *db = db_connection();
@@ -169,8 +213,69 @@ PersonaList *get_personas(void)
 }
 
 /**
- * @internal
+ * client must free the list or call free_persona(Persona $persona) for safety
  */
+Persona *get_persona(const char *persona_name)
+{
+  sqlite3 *db = db_connection();
+  if (db == NULL)
+    return NULL;
+
+  sqlite3_stmt *stmt;
+  const char *sql = "SELECT id, username, persona FROM bosses WHERE username = ?;";
+
+  Persona *persona = malloc(sizeof(Persona));
+
+  if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK)
+  {
+    sqlite3_bind_text(stmt, 2, persona_name, strlen(persona_name), SQLITE_STATIC);
+
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+      persona->id = sqlite3_column_int(stmt, 0);
+      strcpy(persona->username, (char *)sqlite3_column_text(stmt, 1));
+      strcpy(persona->persona, (char *)sqlite3_column_text(stmt, 2));
+    }
+  }
+
+  sqlite3_finalize(stmt);
+  sqlite3_close(db);
+
+  return persona;
+}
+
+/**
+ * client must free the list or call free_persona(Persona $persona) for safety
+ */
+Persona *get_persona_by_id(const int persona_id)
+{
+  sqlite3 *db = db_connection();
+  if (db == NULL)
+    return NULL;
+
+  sqlite3_stmt *stmt;
+  const char *sql = "SELECT id, username, persona FROM bosses WHERE id = ?;";
+
+  Persona *persona = malloc(sizeof(Persona));
+
+  if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK)
+  {
+    sqlite3_bind_int(stmt, 1, persona_id);
+
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+      persona->id = sqlite3_column_int(stmt, 0);
+      strcpy(persona->username, (char *)sqlite3_column_text(stmt, 1));
+      strcpy(persona->persona, (char *)sqlite3_column_text(stmt, 2));
+    }
+  }
+
+  sqlite3_finalize(stmt);
+  sqlite3_close(db);
+
+  return persona;
+}
+
 int insert_persona(char *persona_name, char *persona)
 {
   sqlite3 *db = db_connection();
@@ -198,9 +303,6 @@ int insert_persona(char *persona_name, char *persona)
   return VAULT_FAILURE;
 }
 
-/**
- * @internal
- */
 int delete_persona(int persona_id)
 {
   sqlite3 *db = db_connection();
@@ -232,3 +334,12 @@ void free_personas_list(PersonaList *list)
     free(list);
   }
 }
+
+void free_persona(Persona *persona)
+{
+  if (persona)
+  {
+    free(persona);
+  }
+}
+
