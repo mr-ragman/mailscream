@@ -59,6 +59,7 @@ php_ext.la
 .DS_Store
 .vscode/
 .idea/
+.valgrindrc
 
 build.sh
 *.devnotes
