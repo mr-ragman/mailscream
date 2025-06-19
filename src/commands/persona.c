@@ -103,14 +103,15 @@ int _list_personas(void)
 
   if (personas->count > 0)
   {
-    for (int i = 0; i < personas->count; i++)
-    {
-      Persona *p = &personas->personas[i];
-      printf("%s (ID: %d)\n", p->username, p->id);
-      printf("%s\n\n", p->persona);
-      if (i < personas->count - 1)
-        printf("-------\n");
-    }
+    display_table(personas);
+    // for (int i = 0; i < personas->count; i++)
+    // {
+    //   Persona *p = &personas->personas[i];
+    //   printf("%s (ID: %d)\n", p->username, p->id);
+    //   printf("%s\n\n", p->persona);
+    //   if (i < personas->count - 1)
+    //     printf("-------\n");
+    // }
   }
   else
   {
@@ -122,4 +123,55 @@ int _list_personas(void)
   free_personas_list(personas);
 
   return 0;
+}
+
+static void print_table_header(void)
+{
+  printf("┌─────────┬─────────────────┬────────────────────────────────────────────────────┐\n");
+  printf("│ %-7s │ %-15s │ %-50s │\n", "ID", "Username", "Their Persona");
+  printf("├─────────┼─────────────────┼────────────────────────────────────────────────────┤\n");
+}
+
+static void print_table_footer(void)
+{
+  printf("└─────────┴─────────────────┴────────────────────────────────────────────────────┘\n");
+}
+
+static void print_table_row(const Persona *persona)
+{
+  // Truncate message if too long then add ...
+  char truncated_message[51];
+  if (persona->persona && strlen(persona->persona) > 50)
+  {
+    strncpy(truncated_message, persona->persona, 47);
+    truncated_message[47] = '.';
+    truncated_message[48] = '.';
+    truncated_message[49] = '.';
+    truncated_message[50] = '\0';
+  }
+  else
+  {
+    strncpy(truncated_message, persona->persona ? persona->persona : "", sizeof(truncated_message) - 1);
+    truncated_message[sizeof(truncated_message) - 1] = '\0';
+  }
+
+  printf("│ %-7d │ %-15s │ %-50s │\n", persona->id, persona->username, truncated_message);
+}
+
+void display_table(const PersonaList *list)
+{
+  if (!list || list->count == 0)
+  {
+    printf("No personas found to display.\n");
+    return;
+  }
+
+  print_table_header();
+
+  for (int i = 0; i < list->count; i++)
+  {
+    print_table_row(&list->personas[i]);
+  }
+
+  print_table_footer();
 }

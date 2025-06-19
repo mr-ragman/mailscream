@@ -10,4 +10,6 @@ int manage_persona(int argc, char **argv);
  */
 int _list_personas(void);
 
+void display_table(const PersonaList *list);
+
 #endif
