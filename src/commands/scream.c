@@ -156,7 +156,7 @@ int list_screams(void)
   return 0;
 }
 
-void print_table_header(void)
+static void print_table_header(void)
 {
   printf("┌─────────┬─────────────────┬────────────────────────────────────────┬─────────┬─────────────────────┐\n");
   printf("│ %-7s │ %-15s │ %-38s │ %-7s │ %-19s │\n",
@@ -164,12 +164,12 @@ void print_table_header(void)
   printf("├─────────┼─────────────────┼────────────────────────────────────────┼─────────┼─────────────────────┤\n");
 }
 
-void print_table_footer(void)
+static void print_table_footer(void)
 {
   printf("└─────────┴─────────────────┴────────────────────────────────────────┴─────────┴─────────────────────┘\n");
 }
 
-void print_scream_row(const Scream *scream)
+static void print_scream_row(const Scream *scream)
 {
   // Truncate message if too long then add ...
   char truncated_message[39];

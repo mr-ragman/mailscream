@@ -14,10 +14,4 @@ int flush_screams(int argc, char **argv);
 
 void display_scream_table(const ScreamList *scream_list);
 
-void print_scream_row(const Scream *scream);
-
-void print_table_header(void);
-
-void print_table_footer(void);
-
 #endif // FLUSH_H
