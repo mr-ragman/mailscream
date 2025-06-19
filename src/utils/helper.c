@@ -60,21 +60,19 @@ void display(const char *header, const char *message)
   // Print top dotted line
   for (int i = 0; i < len + 4; i++)
   {
-    printf(".");
+    printf("-");
   }
   printf("\n");
 
   // Print header with dots on sides
-  printf(". %s .\n", header);
+  printf(" %s \n", header);
 
   // Print bottom dotted line
   for (int i = 0; i < len + 4; i++)
   {
-    printf(".");
+    printf("-");
   }
-  printf("\n");
-  puts(message);
-  puts("");
+  printf("\n %s\n", message);
 }
 
 int is_help_command(const char *arg)
@@ -86,32 +84,32 @@ void suggest_help_manual(char *command_name)
 {
   if (command_name == NULL)
   {
-    puts("Run `mailscream help` for more options.\n");
+    puts(" Run `mailscream help` for more options.\n");
   }
   else if (strcmp(command_name, "new") == 0)
   {
-    puts("Usage:\n");
-    puts("- mailscream persona_name \"your message\"");
-    puts("- mailscream persona_id \"your message\"\n");
+    puts(" Usage:\n");
+    puts(" - mailscream persona_name \"your scream message\"");
+    puts(" - mailscream persona_id \"your scream message\"\n");
   }
   else if (strcmp(command_name, "persona") == 0)
   {
-    puts("\nUsage:\n");
-    puts("- New Persona:     mailscream p add <persona_name> \"describe your persona briefly. Do them justice!\"");
-    puts("- List Personas:   mailscream p list");
-    puts("- Remove Persona:  mailscream p remove <id>\n");
-    puts("For more options run `mailscream help`\n");
+    puts("\n Usage:\n");
+    puts(" - New Persona:     mailscream p add <persona_name> \"describe your persona briefly. Do them justice!\"");
+    puts(" - List Personas:   mailscream p list");
+    puts(" - Remove Persona:  mailscream p remove <id>\n");
+    puts(" For more options run `mailscream help`\n");
   }
   else if (strcmp(command_name, "vault") == 0)
   {
-    puts("\nUsage:\n");
-    puts("- Use: mailscream vault init - to create new local vault.");
-    puts("- Use: mailscream vault drop - to remove your local vault.\n");
-    puts("For more options run `mailscream help`\n");
+    puts("\n Usage:\n");
+    puts(" - Use: mailscream vault init - to create new local vault.");
+    puts(" - Use: mailscream vault drop - to remove your local vault.\n");
+    puts(" For more options run `mailscream help`\n");
   }
   else
   {
-    puts("Run `mailscream help` for more options.\n");
+    puts(" Run `mailscream help` for more options.\n");
   }
 }
 

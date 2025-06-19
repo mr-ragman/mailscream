@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h> // for file operations like, access(), unlink()
-#include <sqlite3.h>
 
 #include "vault.h"
 #include "../utils/helper.h"
@@ -84,12 +83,21 @@ int vault_init()
 
   // get file size
   fseek(file, 0, SEEK_END);
-  long length = ftell(file);
+  size_t length = ftell(file);
   rewind(file);
 
   // load migration into memory
   char *sql = malloc(length + 1);
-  fread(sql, 1, length, file);
+  size_t bytes_read = fread(sql, 1, length, file);
+
+  // I/O error?
+  if (bytes_read != length)
+  {
+    free(sql);
+    fclose(file);
+    return 1;
+  }
+
   sql[length] = '\0';
   fclose(file);
 
@@ -132,7 +140,13 @@ int vault_drop()
 
   puts("[WARNING] Are you sure you want to drop your local vault? This cannot be undone. [y/N]: ");
   char confirm;
-  scanf(" %c", &confirm);
+  int result = scanf(" %c", &confirm);
+  if (result != 1)
+  {
+    // EOF or invalid input?
+    exit(EXIT_FAILURE);
+  }
+
   if (confirm != 'y' && confirm != 'Y')
   {
     puts("\n[ERROR] Drop aborted.\n");
@@ -226,11 +240,11 @@ Persona *get_persona(const char *persona_name)
 
   Persona *persona = malloc(sizeof(Persona));
 
-  if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK)
+  if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
   {
     sqlite3_bind_text(stmt, 2, persona_name, strlen(persona_name), SQLITE_STATIC);
 
-    while (sqlite3_step(stmt) == SQLITE_ROW)
+    if (sqlite3_step(stmt) == SQLITE_ROW)
     {
       persona->id = sqlite3_column_int(stmt, 0);
       strcpy(persona->username, (char *)sqlite3_column_text(stmt, 1));
@@ -258,11 +272,11 @@ Persona *get_persona_by_id(const int persona_id)
 
   Persona *persona = malloc(sizeof(Persona));
 
-  if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK)
+  if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
   {
     sqlite3_bind_int(stmt, 1, persona_id);
 
-    while (sqlite3_step(stmt) == SQLITE_ROW)
+    if (sqlite3_step(stmt) == SQLITE_ROW)
     {
       persona->id = sqlite3_column_int(stmt, 0);
       strcpy(persona->username, (char *)sqlite3_column_text(stmt, 1));
@@ -343,3 +357,95 @@ void free_persona(Persona *persona)
   }
 }
 
+// ====================
+//    Manage Messages
+// ====================
+
+int add_scream(int persona_id, const char *message)
+{
+  sqlite3 *db = db_connection();
+  sqlite3_stmt *stmt;
+
+  const char *sql = "INSERT INTO emails (boss_id, body) VALUES (?, ?);";
+  if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
+  {
+    sqlite3_bind_int(stmt, 1, persona_id);
+    sqlite3_bind_text(stmt, 2, message, -1, SQLITE_STATIC);
+
+    if (sqlite3_step(stmt) == SQLITE_DONE)
+    {
+      sqlite3_finalize(stmt);
+      sqlite3_close(db);
+      return VAULT_SUCCESS;
+    }
+  }
+
+  sqlite3_finalize(stmt);
+  sqlite3_close(db);
+
+  return VAULT_FAILURE;
+}
+
+ScreamList *get_screams(void)
+{
+  sqlite3 *db = db_connection();
+  if (db == NULL)
+    return NULL;
+
+  sqlite3_stmt *stmt;
+  const char *sql = "SELECT "
+                    "e.id as scream_id, username, e.body as message, strftime('%Y-%m-%d %H:%M', e.created_at) as created_at,"
+                    "COUNT(r.id) as total_replies "
+                    " FROM emails e"
+                    " INNER JOIN bosses b ON e.boss_id = b.id"
+                    " LEFT JOIN emails r ON e.id = r.parent_id"
+                    " WHERE e.parent_id IS NULL"
+                    " GROUP BY e.id"
+                    " ORDER BY e.id DESC"
+                    " LIMIT 25;";
+
+  if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK)
+  {
+    fprintf(stderr, "\n  [SQL ERROR]: %s\n", sqlite3_errmsg(db));
+
+    // Cleanup
+    if (stmt)
+      sqlite3_finalize(stmt);
+    sqlite3_close(db);
+    return NULL;
+  }
+
+  // Allocate initial space
+  ScreamList *list = malloc(sizeof(ScreamList));
+  list->screams = calloc(MAX_LATEST_EMAILS, sizeof(Scream));
+  list->count = 0;
+
+  while (sqlite3_step(stmt) == SQLITE_ROW)
+  {
+    Scream *scream = &list->screams[list->count];
+    scream->scream_id = sqlite3_column_int(stmt, 0);
+    scream->total_replies = sqlite3_column_int(stmt, 4);
+    strcpy(scream->username, (char *)sqlite3_column_text(stmt, 1));
+    strcpy(scream->created_at, (char *)sqlite3_column_text(stmt, 3));
+
+    // message needs mem location
+    const char *msg = (const char *)sqlite3_column_text(stmt, 2);
+    scream->message = msg ? strdup(msg) : NULL;
+    
+    list->count++;
+  }
+
+  sqlite3_finalize(stmt);
+  sqlite3_close(db);
+
+  return list;
+}
+
+void free_screams_list(ScreamList *list)
+{
+  if (list)
+  {
+    free(list->screams);
+    free(list);
+  }
+}
