@@ -25,7 +25,7 @@ const char *_get_random_confirmation()
   return confirmation_messages[index];
 }
 
-int create_scream(int argc, char **argv)
+static int create_scream(int argc, char **argv)
 {
   bool should_ai_reply = true;
   int persona_index = 1; // without options
@@ -66,6 +66,7 @@ int create_scream(int argc, char **argv)
   if (persona == NULL || persona->id <= 0)
   {
     display("[Oops!] This persona does not exit", "\n  Double check your persona's name or ID and try again.");
+    free_persona(persona);
     return 1;
   }
 
@@ -130,23 +131,23 @@ int list_screams(void)
 
   if (screams == NULL)
   {
-    display("[Hey!] No vents to see here!", "Got someone to screan at today?\n");
+    display("[Hey!] No vents to see here!", "Got someone to scream at today?\n");
     suggest_help_manual("new");
     free_screams_list(screams);
     return 1;
   }
 
   puts("\n ------------------------------------");
-  printf(" List of your %d most recent screams!\n", screams->count);
-  puts(" ------------------------------------");
+  printf(" >>   Your %d most recent screams!\n", screams->count);
+  puts(" ------------------------------------\n");
 
   if (screams->count > 0)
   {
-    display_scream_table(screams);
+    display_screams_list_table(screams);
   }
   else
   {
-    display("[Hey!] No vents to see here!", "Got someone to screan at today?\n");
+    display("[Hey!] No vents to see here!", "Got someone to scream at today?\n");
     suggest_help_manual("new");
     puts("");
   }
@@ -156,11 +157,50 @@ int list_screams(void)
   return 0;
 }
 
+int read_scream(int argc, char **argv)
+{
+  if (argc != 3 || atoi(argv[2]) <= 0)
+  {
+    display("[Oops] Invalid number of arguments", "Please check the manual and try again\n");
+    suggest_help_manual("read");
+    return 1;
+  }
+
+  Scream *scream = get_scream_and_replies(atoi(argv[2]));
+
+  if (scream == NULL)
+  {
+    display("[Hey!] No vents to see here!", "Got someone to scream at today?\n");
+    suggest_help_manual("new");
+    free_scream(scream);
+    return 1;
+  }
+
+  puts("\n ------------------------------------");
+  printf(" >> You are viewing a scream ID: %d!\n", atoi(argv[2]));
+  puts(" ------------------------------------");
+
+  if (scream->scream_id > 0)
+  {
+    print_scream_and_replies(scream);
+  }
+  else
+  {
+    printf("\n Sorry, no scream found with ID %s. Want to create a new one?\n\n", argv[2]);
+    suggest_help_manual("new");
+    puts("");
+  }
+
+  free_scream(scream);
+
+  return 0;
+}
+
 static void print_table_header(void)
 {
   printf("┌─────────┬─────────────────┬────────────────────────────────────────┬─────────┬─────────────────────┐\n");
   printf("│ %-7s │ %-15s │ %-38s │ %-7s │ %-19s │\n",
-         "ID", "Sent To", "Message", "Replies", "Created At");
+         "Scr. ID", "Sent To", "Message", "Replies", "Created At");
   printf("├─────────┼─────────────────┼────────────────────────────────────────┼─────────┼─────────────────────┤\n");
 }
 
@@ -198,7 +238,21 @@ static void print_scream_row(const Scream *scream)
   free(scream->message);
 }
 
-void display_scream_table(const ScreamList *scream_list)
+int manage_screams(int argc, char **argv)
+{
+  if (strcmp(argv[1], "read") == 0 || strcmp(argv[1], "r") == 0)
+  {
+    return read_scream(argc, argv);
+  }
+  else
+  {
+    return create_scream(argc, argv);
+  }
+
+  return 0;
+}
+
+void display_screams_list_table(const ScreamList *scream_list)
 {
   if (!scream_list || scream_list->count == 0)
   {
@@ -214,4 +268,44 @@ void display_scream_table(const ScreamList *scream_list)
   }
 
   print_table_footer();
+}
+
+static void print_scream_reply(ScreamReply *scream_reply)
+{
+  printf("  ↳ From: %s @ %s\n", scream_reply->username, scream_reply->created_at);
+  printf("    %s\n\n", scream_reply->message);
+  free(scream_reply->message);
+}
+
+static void print_main_scream(Scream *scream)
+{
+  puts("");
+  printf("  From: %s\n", scream->username);
+  printf("  Date: %s\n", scream->created_at);
+  printf("  Message:\n  ->  %s\n\n", scream->message);
+
+  free(scream->message);
+}
+
+void print_scream_and_replies(Scream *scream)
+{
+  // Print main scream
+  print_main_scream(scream);
+
+  if (scream->total_replies > 0)
+  {
+    for (int j = 0; j < scream->total_replies; j++)
+    {
+      // ScreamReply *temp = &scream->replies[j];
+      if ((&scream->replies[j])->scream_id > 0) {
+        print_scream_reply(&scream->replies[j]);
+      }
+    }
+  }
+  else
+  {
+    printf("(No replies)\n");
+  }
+
+  printf("\n===================================================\n\n");
 }

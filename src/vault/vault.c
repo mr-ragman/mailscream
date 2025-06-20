@@ -431,7 +431,7 @@ ScreamList *get_screams(void)
     // message needs mem location
     const char *msg = (const char *)sqlite3_column_text(stmt, 2);
     scream->message = msg ? strdup(msg) : NULL;
-    
+
     list->count++;
   }
 
@@ -439,6 +439,79 @@ ScreamList *get_screams(void)
   sqlite3_close(db);
 
   return list;
+}
+
+Scream *get_scream_and_replies(int scream_id)
+{
+  sqlite3 *db = db_connection();
+  if (db == NULL || scream_id < 1)
+    return NULL;
+
+  sqlite3_stmt *stmt;
+  const char *sql = "WITH RECURSIVE email_thread AS ("
+        "  SELECT id, boss_id, parent_id, body, created_at, 0 as level "
+        "  FROM emails WHERE id = ? "
+        "  UNION ALL "
+        "  SELECT e.id, e.boss_id, e.parent_id, e.body, e.created_at, et.level + 1 "
+        "  FROM emails e"
+        "  JOIN email_thread et ON e.parent_id = et.id"
+        ") "
+        "SELECT t.id, b.username, CASE WHEN parent_id IS NOT NULL THEN 1 ELSE 0 END AS is_reply, body as message, strftime('%Y-%m-%d %H:%M', t.created_at) as created_at "
+        " FROM email_thread t "
+        " LEFT JOIN bosses b ON t.boss_id = b.id"
+        " WHERE t.parent_id IS NULL OR t.parent_id IN (SELECT id FROM email_thread)"
+        " ORDER BY level, created_at";
+
+  if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK)
+  {
+    fprintf(stderr, "\n  [SQL ERROR]: %s\n", sqlite3_errmsg(db));
+
+    // Cleanup
+    if (stmt)
+      sqlite3_finalize(stmt);
+    sqlite3_close(db);
+    return NULL;
+  }
+
+  // Allocate initial space based on data type
+  Scream *scream = malloc(sizeof(Scream));
+  scream->replies = calloc(MAX_LATEST_EMAILS, sizeof(ScreamReply));
+  scream->total_replies = 0;
+
+  // bind params
+  sqlite3_bind_int(stmt, 1, scream_id);
+
+  while (sqlite3_step(stmt) == SQLITE_ROW)
+  {
+    int is_reply = sqlite3_column_int(stmt, 2);
+
+    if (is_reply > 0) {
+      ScreamReply *reply = &scream->replies[scream->total_replies]; //malloc(sizeof(ScreamReply));
+      reply->scream_id = sqlite3_column_int(stmt, 0);
+      strcpy(reply->username, (char *)sqlite3_column_text(stmt, 1));
+      strcpy(reply->created_at, (char *)sqlite3_column_text(stmt, 4));
+      // message needs mem location
+      const char *reply_msg = (const char *)sqlite3_column_text(stmt, 3);
+      reply->message = reply_msg ? strdup(reply_msg) : NULL;
+      // store
+      // scream->replies[0] = *reply;
+
+    } else {
+      scream->scream_id = sqlite3_column_int(stmt, 0);
+      strcpy(scream->username, (char *)sqlite3_column_text(stmt, 1));
+      strcpy(scream->created_at, (char *)sqlite3_column_text(stmt, 4));
+      // message needs mem location
+      const char *msg = (const char *)sqlite3_column_text(stmt, 3);
+      scream->message = msg ? strdup(msg) : NULL;
+    }
+
+    scream->total_replies += 1;
+  }
+
+  sqlite3_finalize(stmt);
+  sqlite3_close(db);
+
+  return scream;
 }
 
 void free_screams_list(ScreamList *list)
@@ -449,3 +522,13 @@ void free_screams_list(ScreamList *list)
     free(list);
   }
 }
+
+void free_scream(Scream *scream)
+{
+  if (scream)
+  {
+    free(scream->replies);
+    free(scream);
+  }
+}
+

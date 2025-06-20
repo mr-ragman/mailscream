@@ -65,12 +65,12 @@ void display(const char *header, const char *message)
   printf("\n");
 
   // Print header with dots on sides
-  printf(" %s \n", header);
+  printf("│ %s │\n", header);
 
   // Print bottom dotted line
   for (int i = 0; i < len + 4; i++)
   {
-    printf("-");
+    printf("─");
   }
   printf("\n %s\n", message);
 }
@@ -91,6 +91,11 @@ void suggest_help_manual(char *command_name)
     puts(" Usage:\n");
     puts(" - mailscream persona_name \"your scream message\"");
     puts(" - mailscream persona_id \"your scream message\"\n");
+  }
+  else if (strcmp(command_name, "read") == 0)
+  {
+    puts(" Usage:\n");
+    puts(" - mailscream r <scream_id>\n");
   }
   else if (strcmp(command_name, "persona") == 0)
   {

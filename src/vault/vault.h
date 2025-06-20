@@ -78,8 +78,17 @@ typedef struct
   int scream_id;
   char username[100]; // too much but, hey!
   char *message;
+  char created_at[20];
+} ScreamReply;
+
+typedef struct
+{
+  int scream_id;
+  char username[100]; // too much but, hey!
+  char *message;
   int total_replies;
   char created_at[20];
+  ScreamReply *replies;
 } Scream;
 
 typedef struct
@@ -87,14 +96,6 @@ typedef struct
   Scream *screams;
   int count;
 } ScreamList;
-
-// typedef struct
-// {
-//   int id;
-//   int boss_id;
-//   int parent_id;
-//   char body[256];
-// } ScreamReply;
 
 // typedef struct
 // {
@@ -114,5 +115,9 @@ int add_scream(int persona_id, const char *message);
 ScreamList *get_screams(void);
 
 void free_screams_list(ScreamList *list);
+
+Scream *get_scream_and_replies(int scream_id);
+
+void free_scream(Scream *scream);
 
 #endif

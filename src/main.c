@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
    */
   else if (argc >= 3 && argc <= 4)
   {
-    return create_scream(argc, argv);
+    return manage_screams(argc, argv);
   }
 
   printf("\nUnknown command [%s] or incorrect number of arguments passed.\n", argv[1]);
