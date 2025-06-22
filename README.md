@@ -16,7 +16,7 @@ Yeah. Us too.
 
 * Repeat as necessary.
 
-**No** servers. **No** surveillance. Just screaming.
+**No** servers. **No** surveillance. Just screaming and rolling into the void.
 
 Because burnout is real, and revenge emails are best left unsent.
 
