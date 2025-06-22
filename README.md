@@ -27,6 +27,11 @@ MailScream&trade; is Not just for catharsis, but for encouraging healthy emotion
 
 > "MailScream saved my job. Or at least my keyboard." — anonymous developer, post-standup meltdown
 
+## 🖥️ CLI Menu Commands
+
+![MailScream Main Menu](images/main-menu.png)
+
+
 ## Install Dependencies:
 
 ```shell
@@ -43,9 +48,13 @@ sudo apt install cmake
 
 ```
 
-## Compile and Run
+## Download, Compile and Run
 
 ```shell
+# Clone/copy your code
+git clone git@github.com:mr-ragman/mailscream.git
+cd mailscream
+
 # Run make
 make clean 2>/dev/null || echo "Nothing to clean"
 
@@ -53,10 +62,20 @@ make clean 2>/dev/null || echo "Nothing to clean"
 make sanitize
 
 # release
-make sanitize-release
+# make sanitize-release
 
 # [optional] - view the linkage
-ldd mailscream
+# ldd mailscream
+
+# OR Compile manually
+# gcc -fsanitize=address,undefined -fno-omit-frame-pointer -D_POSIX_C_SOURCE=200809L -g -Wall -Wextra -O1 -Wpedantic -std=c17 src/main.c src/utils/helper.c src/vault/vault.c src/commands/scream.c src/commands/persona.c -o mailscream -lsqlite3
+
+# (OPTIONAL) Set environment variables - 
+# export LLM_API_KEY="sk-123xyz"
+# export LLM_COMPLETION_URL="https://api.openai.com/v1/completions"
+
+# Run it
+./mailscream
 ```
 
 ## Add this to ~/.bashrc or ~/.zshrc
@@ -86,5 +105,13 @@ If you find yourself needing more than 20 different people to regularly scream a
 2. **A career change** 💼  
 3. **Moving to a deserted island** 🏝️
 4. **All of the above** ✅
+
+## License
+
+> License: MIT © 2025 — SPDX-License-Identifier: MIT
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Built with sarcasm](https://img.shields.io/badge/mood-sarcasm-orange)](#)
+
 
 ### Enjoy!!
