@@ -1,4 +1,4 @@
-# MailScream
+# MailScream&trade;
 
 _Because, sometimes, it's the only way!!_
 
@@ -6,7 +6,7 @@ _Because, sometimes, it's the only way!!_
 
 Yeah. Us too.
 
-**MailScream** is your offline scream vault — a local-first CLI app for venting into the void (with sarcasm plugins, if you're brave).
+**MailScream&trade;** is your offline scream vault — a local-first CLI app for venting into the void (with sarcasm plugins, if you're brave).
 
 * Compose that spicy email.
 
@@ -20,7 +20,7 @@ Yeah. Us too.
 
 Because burnout is real, and revenge emails are best left unsent.
 
-MailScream is Not just for catharsis, but for encouraging healthy emotional boundaries! 🎭✨
+MailScream&trade; is Not just for catharsis, but for encouraging healthy emotional boundaries! 🎭✨
 
 
 ## Testimonials
