@@ -3,12 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h> // for file operations like, access(), unlink()
+#include <unistd.h> // File operations like, access(), unlink()
 
 #include "vault.h"
 #include "../utils/helper.h"
 
-char *MIGRATION_FILE = "/migrations/schema.sql";
+char *MIGRATION_FILE = "/src/migrations/schema.sql";
 const char *DB_PATH = "/mailscream.db";
 
 sqlite3 *db_connection()
@@ -30,8 +30,8 @@ sqlite3 *db_connection()
   if (rc != SQLITE_OK)
   {
     fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
-    sqlite3_close(db); // Clean up even on failure
-    return NULL;       // Return NULL to indicate failure
+    sqlite3_close(db);
+    return NULL;
   }
 
   return db;
@@ -77,16 +77,13 @@ int vault_init()
     free(path);
     return 1;
   }
-
-  // we don't need path anymore
+  
   free(path);
 
-  // get file size
   fseek(file, 0, SEEK_END);
   size_t length = ftell(file);
   rewind(file);
 
-  // load migration into memory
   char *sql = malloc(length + 1);
   size_t bytes_read = fread(sql, 1, length, file);
 
@@ -187,7 +184,7 @@ void vault_help()
 // ====================
 
 /**
- * client must free the list or call free_personas_list(PersonaList $personalist) for safety
+ * !! Client must FREE the list or call free_personas_list(PersonaList $personalist) for safety
  */
 PersonaList *get_personas(void)
 {
@@ -204,15 +201,13 @@ PersonaList *get_personas(void)
     sqlite3_close(db);
     return NULL;
   }
-
-  // Allocate initial space
+  
   PersonaList *list = malloc(sizeof(PersonaList));
   list->personas = calloc(MAX_PERSONAS, sizeof(Persona));
   list->count = 0;
 
   while (sqlite3_step(stmt) == SQLITE_ROW)
   {
-    // populate the memory space
     Persona *persona = &list->personas[list->count];
     persona->id = sqlite3_column_int(stmt, 0);
     strcpy(persona->username, (char *)sqlite3_column_text(stmt, 1));
@@ -227,7 +222,7 @@ PersonaList *get_personas(void)
 }
 
 /**
- * client must free the list or call free_persona(Persona $persona) for safety
+ * !! Client must free the list or call free_persona(Persona $persona) for safety
  */
 Persona *get_persona(const char *persona_name)
 {
@@ -242,7 +237,7 @@ Persona *get_persona(const char *persona_name)
 
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
   {
-    sqlite3_bind_text(stmt, 2, persona_name, strlen(persona_name), SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 1, persona_name, strlen(persona_name), SQLITE_STATIC);
 
     if (sqlite3_step(stmt) == SQLITE_ROW)
     {
@@ -259,7 +254,7 @@ Persona *get_persona(const char *persona_name)
 }
 
 /**
- * client must free the list or call free_persona(Persona $persona) for safety
+ * !! Client must free the list or call free_persona(Persona $persona) for safety
  */
 Persona *get_persona_by_id(const int persona_id)
 {
@@ -298,11 +293,9 @@ int insert_persona(char *persona_name, char *persona)
   const char *sql = "INSERT INTO bosses (username, persona) VALUES (?, ?);";
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
   {
-    // bind params
     sqlite3_bind_text(stmt, 1, persona_name, strlen(persona_name), SQLITE_STATIC);
     sqlite3_bind_text(stmt, 2, persona, -1, SQLITE_STATIC);
 
-    // execute
     if (sqlite3_step(stmt) == SQLITE_DONE)
     {
       sqlite3_finalize(stmt);
@@ -411,6 +404,7 @@ ScreamList *get_screams(void)
     // Cleanup
     if (stmt)
       sqlite3_finalize(stmt);
+
     sqlite3_close(db);
     return NULL;
   }
@@ -449,18 +443,18 @@ Scream *get_scream_and_replies(int scream_id)
 
   sqlite3_stmt *stmt;
   const char *sql = "WITH RECURSIVE email_thread AS ("
-        "  SELECT id, boss_id, parent_id, body, created_at, 0 as level "
-        "  FROM emails WHERE id = ? "
-        "  UNION ALL "
-        "  SELECT e.id, e.boss_id, e.parent_id, e.body, e.created_at, et.level + 1 "
-        "  FROM emails e"
-        "  JOIN email_thread et ON e.parent_id = et.id"
-        ") "
-        "SELECT t.id, b.username, CASE WHEN parent_id IS NOT NULL THEN 1 ELSE 0 END AS is_reply, body as message, strftime('%Y-%m-%d %H:%M', t.created_at) as created_at "
-        " FROM email_thread t "
-        " LEFT JOIN bosses b ON t.boss_id = b.id"
-        " WHERE t.parent_id IS NULL OR t.parent_id IN (SELECT id FROM email_thread)"
-        " ORDER BY level, created_at";
+                    "  SELECT id, boss_id, parent_id, body, created_at, 0 as level "
+                    "  FROM emails WHERE id = ? "
+                    "  UNION ALL "
+                    "  SELECT e.id, e.boss_id, e.parent_id, e.body, e.created_at, et.level + 1 "
+                    "  FROM emails e"
+                    "  JOIN email_thread et ON e.parent_id = et.id"
+                    ") "
+                    "SELECT t.id, b.username, CASE WHEN parent_id IS NOT NULL THEN 1 ELSE 0 END AS is_reply, body as message, strftime('%Y-%m-%d %H:%M', t.created_at) as created_at "
+                    " FROM email_thread t "
+                    " LEFT JOIN bosses b ON t.boss_id = b.id"
+                    " WHERE t.parent_id IS NULL OR t.parent_id IN (SELECT id FROM email_thread)"
+                    " ORDER BY level, created_at";
 
   if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK)
   {
@@ -485,21 +479,23 @@ Scream *get_scream_and_replies(int scream_id)
   {
     int is_reply = sqlite3_column_int(stmt, 2);
 
-    if (is_reply > 0) {
-      ScreamReply *reply = &scream->replies[scream->total_replies]; //malloc(sizeof(ScreamReply));
+    if (is_reply > 0)
+    {
+      ScreamReply *reply = &scream->replies[scream->total_replies];
       reply->scream_id = sqlite3_column_int(stmt, 0);
       strcpy(reply->username, (char *)sqlite3_column_text(stmt, 1));
       strcpy(reply->created_at, (char *)sqlite3_column_text(stmt, 4));
+
       // message needs mem location
       const char *reply_msg = (const char *)sqlite3_column_text(stmt, 3);
       reply->message = reply_msg ? strdup(reply_msg) : NULL;
-      // store
-      // scream->replies[0] = *reply;
-
-    } else {
+    }
+    else
+    {
       scream->scream_id = sqlite3_column_int(stmt, 0);
       strcpy(scream->username, (char *)sqlite3_column_text(stmt, 1));
       strcpy(scream->created_at, (char *)sqlite3_column_text(stmt, 4));
+
       // message needs mem location
       const char *msg = (const char *)sqlite3_column_text(stmt, 3);
       scream->message = msg ? strdup(msg) : NULL;
@@ -531,4 +527,3 @@ void free_scream(Scream *scream)
     free(scream);
   }
 }
-

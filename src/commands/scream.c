@@ -58,14 +58,18 @@ static int create_scream(int argc, char **argv)
   Persona *persona;
   if (persona_id > 0)
   {
+    puts("checking ID");
     persona = get_persona_by_id(persona_id);
   }
   else
+  {
+    printf("checking name: %s", persona_name);
     persona = get_persona(persona_name);
+  }
 
   if (persona == NULL || persona->id <= 0)
   {
-    display("[Oops!] This persona does not exit", "\n  Double check your persona's name or ID and try again.");
+    display("Oops, This persona does not exit", "\n Please, double check your persona's username or ID and try again.\n\n");
     free_persona(persona);
     return 1;
   }
@@ -91,7 +95,7 @@ static int create_scream(int argc, char **argv)
       exit(EXIT_FAILURE);
     }
 
-    snprintf(confirm_msg, required_size, "[SUCCESS] Your scream was successfully sent to %s!", username);
+    snprintf(confirm_msg, required_size, "[SUCCESS] You successfully screamed at %s. They deserve it!", username);
 
     // Step 4: maybe generate reply
     if (should_ai_reply)
@@ -280,7 +284,7 @@ static void print_scream_reply(ScreamReply *scream_reply)
 static void print_main_scream(Scream *scream)
 {
   puts("");
-  printf("  From: %s\n", scream->username);
+  printf("  To: %s\n", scream->username);
   printf("  Date: %s\n", scream->created_at);
   printf("  Message:\n  ->  %s\n\n", scream->message);
 
@@ -296,7 +300,6 @@ void print_scream_and_replies(Scream *scream)
   {
     for (int j = 0; j < scream->total_replies; j++)
     {
-      // ScreamReply *temp = &scream->replies[j];
       if ((&scream->replies[j])->scream_id > 0) {
         print_scream_reply(&scream->replies[j]);
       }

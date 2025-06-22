@@ -89,7 +89,7 @@ void suggest_help_manual(char *command_name)
   else if (strcmp(command_name, "new") == 0)
   {
     puts(" Usage:\n");
-    puts(" - mailscream persona_name \"your scream message\"");
+    puts(" - mailscream persona_username \"your scream message\"");
     puts(" - mailscream persona_id \"your scream message\"\n");
   }
   else if (strcmp(command_name, "read") == 0)

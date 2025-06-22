@@ -22,7 +22,7 @@ CFLAGS_SANITIZE_GNU = -fsanitize=address,undefined -fno-omit-frame-pointer $(CFL
 CFLAGS_SANITIZE_POSIX = -fsanitize=address,undefined -fno-omit-frame-pointer $(CFLAGS_POSIX)
 
 # Files
-SRC=main.c utils/helper.c vault/vault.c commands/scream.c commands/persona.c
+SRC=src/main.c src/utils/helper.c src/vault/vault.c src/commands/scream.c src/commands/persona.c
 
 # Libraries we need
 LIBS=-lsqlite3

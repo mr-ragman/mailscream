@@ -104,14 +104,6 @@ int _list_personas(void)
   if (personas->count > 0)
   {
     display_table(personas);
-    // for (int i = 0; i < personas->count; i++)
-    // {
-    //   Persona *p = &personas->personas[i];
-    //   printf("%s (ID: %d)\n", p->username, p->id);
-    //   printf("%s\n\n", p->persona);
-    //   if (i < personas->count - 1)
-    //     printf("-------\n");
-    // }
   }
   else
   {
