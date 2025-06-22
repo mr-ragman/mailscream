@@ -1,8 +1,31 @@
 # MailScream
 
-Because, sometimes, it's the only way!!
+_Because, sometimes, it's the only way!!_
+
+### Ever drafted or wanted to send a rage email at 2AM... and had the wisdom not to send it?
+
+Yeah. Us too.
+
+**MailScream** is your offline scream vault — a local-first CLI app for venting into the void (with sarcasm plugins, if you're brave).
+
+* Compose that spicy email.
+
+* Send it.. Yes, SEND it - into the void.
+
+* Get roasted by your imaginary boss if you enable OpenAI (or OpenAI compatible LLM).
+
+* Repeat as necessary.
+
+**No** servers. **No** surveillance. Just screaming.
+
+Because burnout is real, and revenge emails are best left unsent.
 
 MailScream is Not just for catharsis, but for encouraging healthy emotional boundaries! 🎭✨
+
+
+## Testimonials
+
+> "MailScream saved my job. Or at least my keyboard." — anonymous developer, post-standup meltdown
 
 ## Install Dependencies:
 

@@ -19,9 +19,9 @@ void show_help()
   puts("------------------------------------------------------");
   puts("They may not care, but your catharsis needs no permission!\n\n");
 
-  puts(" =====================");
-  printf(" " BOLD "[ Scream instantly! ]" RESET "\n");
-  puts(" =====================\n");
+  puts(" ===============================================");
+  printf(" " BOLD "[ Scream instantly - Caps Lock is encouraged! ]" RESET "\n");
+  puts(" ===============================================\n");
   puts(" - mailscream [--options] <persona_name> \"your message\"\n");
   puts(" - mailscream [--options] <persona_id> \"your message\"\n");
 
