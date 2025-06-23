@@ -40,7 +40,7 @@ missing
 install-sh
 depcomp
 
-Makefile.dev
+Makefile.dev*
 Makefile.fragments
 Makefile.objects
 config.nice
