@@ -29,15 +29,16 @@ SRC=src/main.c src/utils/helper.c src/vault/vault.c src/commands/scream.c src/co
 LIBS=-lsqlite3
 
 # the executable program name
-OUT=mailscream-prod
+OUT=mailscream
 
 # ========================================================
 # C + POSIX
 # ========================================================
 all:
+	clear
 	@echo "\n=== [Compiling For: $(COMPILE_VERSION) + POSIX] ===\n"
 	$(CC) $(CFLAGS_POSIX) $(CFLAGS_RELEASE) $(SRC) -o $(OUT) $(LIBS)
-	@echo "\n [ OK! Compilation completed successfully..]\n"
-	@echo "\n Ping the app...\n"
+	@echo "\n=== [ OK! Compilation completed successfully..] ===\n"
+	@echo "\n=== Ping the app... ===\n"
 	./$(OUT) ping
-	@echo "\n [ DONE! Now you can run [ ./$(OUT) ] to go to main menu!]\n"
+	@echo "\n=== [ DONE! Now you can run [ ./$(OUT) ] to go to main menu!] ===\n\n"
