@@ -93,7 +93,7 @@ static int create_scream(int argc, char **argv)
       exit(EXIT_FAILURE);
     }
 
-    snprintf(confirm_msg, required_size, "[SUCCESS] You did it! Now %s knows exactly how you feel!", username);
+    snprintf(confirm_msg, required_size, "[SUCCESS] Now %s knows exactly how you feel!", username);
 
     // Step 4: maybe generate reply
     if (should_ai_reply)
