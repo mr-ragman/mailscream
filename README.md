@@ -71,9 +71,29 @@ make
 # export LLM_API_KEY="sk-123xyz"
 # export LLM_COMPLETION_URL="https://api.openai.com/v1/completions"
 
-# Run it
+# Main menu
 ./mailscream
+
+# Finally, create your local vault (db) to store your rants!
+./mailscream db init
+
+# Your first persona
+./mailscream p add Karen99 "The wanna be boss because she has been here for over 4 years!"
+
+# Your first scream
+./mailscream Karen99 "If I hear your voice one more time.. i am going to burn this place up!!"
+
+# View your persona list
+./mailscream p list
+
+# view your messages
+./mailscream list
+
+# read a particular thread/message (by ID)
+./mailscream r 2
 ```
+
+Follow the menu for more exciting options! 
 
 ## Add this to ~/.bashrc or ~/.zshrc
 
