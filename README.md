@@ -98,9 +98,9 @@ make
 
 Follow the menu for more exciting options! 
 
-## Add this to ~/.bashrc or ~/.zshrc
+## Add your program's path to ~/.bashrc or ~/.zshrc
 
-Create shortcuts for maximum fun!!
+Create shortcuts for maximum fun and time savings!!
 
 ```shell
 alias scream="/path/to/your/mailscream"
