@@ -58,12 +58,10 @@ static int create_scream(int argc, char **argv)
   Persona *persona;
   if (persona_id > 0)
   {
-    puts("checking ID");
     persona = get_persona_by_id(persona_id);
   }
   else
   {
-    printf("checking name: %s", persona_name);
     persona = get_persona(persona_name);
   }
 
