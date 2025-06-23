@@ -80,9 +80,9 @@ make
 Create shortcuts for maximum fun!!
 
 ```shell
-alias scream="mailscream"
-alias boss="mailscream yourbossname"
-alias yell='mailscream yourbossname --no-reply'
+alias scream="/path/to/your/mailscream"
+alias boss="scream <boss_username|ID>"
+alias yell='scream --no-reply <boss_username|ID>'
 ```
 
 ## Now you can:
