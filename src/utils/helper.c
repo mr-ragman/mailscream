@@ -22,7 +22,7 @@ void show_help()
   puts(" ===============================================");
   printf(" " BOLD "[ Scream instantly - Caps Lock is encouraged! ]" RESET "\n");
   puts(" ===============================================\n");
-  puts(" - mailscream [--options] <persona_name> \"your message\"\n");
+  puts(" - mailscream [--options] <persona_username> \"your message\"\n");
   puts(" - mailscream [--options] <persona_id> \"your message\"\n");
 
   printf("\n " BOLD "[ More actions: ]" RESET "\n\n");
@@ -43,8 +43,8 @@ void show_help()
 
   // options
   printf("  \033[1;33mOptions:\033[0m\n\n");
-  printf("  \033[1;36m--no-reply, -nr\033[0m    Your quiet emotional flush - No replies today!\n");
-  puts("                     Usage: mailscream s -nr <name> \"your message\"\n");
+  printf("  \033[1;36m--no-reply, -nr\033[0m         Your quiet emotional flush - No replies today!\n");
+  puts("                          Usage: mailscream -nr <persona_username | ID> \"your message\"\n");
 }
 
 /**
