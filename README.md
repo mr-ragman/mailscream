@@ -98,14 +98,14 @@ We've capped your persona list at 20 individuals.
 
 If you find yourself needing more than 20 different people to regularly scream at, you might want to consider:
 
-1. **Real Therapy** 🛋️
-2. **A career change** 💼  
-3. **Moving to a deserted island** 🏝️
+1. **Real Therapy** 
+2. **A career change**
+3. **Moving to a deserted island**
 4. **All of the above** ✅
 
 ## License
 
-> License: MIT © 2025 — SPDX-License-Identifier: MIT
+_License: MIT © 2025 — SPDX-License-Identifier: MIT_
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Built with sarcasm](https://img.shields.io/badge/mood-sarcasm-orange)](#)
