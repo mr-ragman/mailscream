@@ -22,16 +22,16 @@ void show_help()
   puts(" ===============================================");
   printf(" " BOLD "[ Scream instantly - Caps Lock is encouraged! ]" RESET "\n");
   puts(" ===============================================\n");
-  puts(" - mailscream [--options] <persona_username> \"your message\"\n");
-  puts(" - mailscream [--options] <persona_id> \"your message\"\n");
+  puts(" - mailscream [--options] <persona_username> 'your message'\n");
+  puts(" - mailscream [--options] <persona_id> 'your message'\n");
 
   printf("\n " BOLD "[ More actions: ]" RESET "\n\n");
   puts("  mailscream <command> [--options] <arguments, ...>\n");
   printf("\n  \033[1;33mCommands:\033[0m\n\n");
   printf("  \033[1;36mpersona, p\033[0m              Manage your scream personas\n");
-  puts("                          Usage: mailscream p [list | add <persona_name> \"short description\" | remove <ID>]\n");
+  puts("                          Usage: mailscream p [list | add <persona_name> 'short description' | remove <ID>]\n");
   printf("  \033[1;36mreply, rp\033[0m               Reply to an earlier conversation/email with a given ID\n");
-  puts("                          Usage: mailscream rp <ID> \"your reply message\"\n");
+  puts("                          Usage: mailscream rp <ID> 'your reply message'\n");
   printf("  \033[1;36mread, r\033[0m                 Read the full email thread with the given ID\n");
   puts("                          Usage: mailscream r <ID>\n");
   printf("  \033[1;36mlist, l\033[0m                 Show all your stored emails\n");
@@ -44,7 +44,7 @@ void show_help()
   // options
   printf("  \033[1;33mOptions:\033[0m\n\n");
   printf("  \033[1;36m--no-reply, -nr\033[0m         Your quiet emotional flush - No replies today!\n");
-  puts("                          Usage: mailscream -nr <persona_username | ID> \"your message\"\n");
+  puts("                          Usage: mailscream -nr <persona_username | ID> 'your message'\n");
 }
 
 /**

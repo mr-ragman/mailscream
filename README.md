@@ -50,6 +50,9 @@ sudo apt install cmake
 
 ## Download, Compile and Run
 
+> ⚠️ Shells like `bash` and `zsh` interpret `!!` as a special command. 
+> Try to always wrap your messages in single quotes to avoid weird behaviors.
+
 ```shell
 # Clone/copy your code
 git clone git@github.com:mr-ragman/mailscream.git
@@ -78,10 +81,10 @@ make
 ./mailscream db init
 
 # Your first persona
-./mailscream p add Karen99 "The wanna be boss because she has been here for over 4 years!"
+./mailscream p add Karen99 'The wanna be boss because she has been here for over 4 years!'
 
 # Your first scream
-./mailscream Karen99 "If I hear your voice one more time.. i am going to burn this place up!!"
+./mailscream Karen99 'If I hear your voice one more time.. i am going to burn this place up!!'
 
 # View your persona list
 ./mailscream p list
