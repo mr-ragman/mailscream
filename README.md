@@ -59,18 +59,15 @@ cd mailscream
 make clean 2>/dev/null || echo "Nothing to clean"
 
 # Quick dev:debug
-make sanitize
-
-# release
-# make sanitize-release
+make
 
 # [optional] - view the linkage
 # ldd mailscream
 
 # OR Compile manually
-# gcc -fsanitize=address,undefined -fno-omit-frame-pointer -D_POSIX_C_SOURCE=200809L -g -Wall -Wextra -O1 -Wpedantic -std=c17 src/main.c src/utils/helper.c src/vault/vault.c src/commands/scream.c src/commands/persona.c -o mailscream -lsqlite3
+# gcc -D_POSIX_C_SOURCE=200809L -g -Wall -Wextra -O2 -Wpedantic -std=c11 -O2 -fstack-protector-strong -DNDEBUG src/main.c src/utils/helper.c src/vault/vault.c src/commands/scream.c src/commands/persona.c -o mailscream-prod -lsqlite3
 
-# (OPTIONAL) Set environment variables - 
+# (OPTIONAL) Set environment variables for maximum sarcasm!
 # export LLM_API_KEY="sk-123xyz"
 # export LLM_COMPLETION_URL="https://api.openai.com/v1/completions"
 
