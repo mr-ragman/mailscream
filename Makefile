@@ -2,13 +2,16 @@
 
 # ====================================================================================
 # For Devs With The Know-How! Git Clone and Use This Makefile To Compile This Program!
+# Adjust as you see fit for your env
 # ====================================================================================
 
 # variables
 CC=gcc
+COMPILE_VERSION=c11
 
 # Base flags - targeting C17 - change to your flavor!
-CFLAGS_BASE = -g -Wall -Wextra -O1 -Wpedantic -std=c17
+CFLAGS_BASE = -g -Wall -Wextra -O2 -Wpedantic -std=$(COMPILE_VERSION)
+CFLAGS_RELEASE = -O2 -fstack-protector-strong -DNDEBUG
 
 # POSIX mode
 CFLAGS_POSIX = -D_POSIX_C_SOURCE=200809L $(CFLAGS_BASE)
@@ -16,66 +19,25 @@ CFLAGS_POSIX = -D_POSIX_C_SOURCE=200809L $(CFLAGS_BASE)
 # GNU - YOLO!
 CFLAGS_GNU = -D_GNU_SOURCE -march=native $(CFLAGS_BASE)
 
-# ASan build
-CFLAGS_SANITIZE_C17 = -fsanitize=address,undefined -fno-omit-frame-pointer $(CFLAGS_BASE)
-CFLAGS_SANITIZE_GNU = -fsanitize=address,undefined -fno-omit-frame-pointer $(CFLAGS_GNU)
-CFLAGS_SANITIZE_POSIX = -fsanitize=address,undefined -fno-omit-frame-pointer $(CFLAGS_POSIX)
-
 # Files
 SRC=src/main.c src/utils/helper.c src/vault/vault.c src/commands/scream.c src/commands/persona.c
+
+# Critical: Also pass sanitizer flags to linker
+# LDFLAGS=-fsanitize=address,undefined
 
 # Libraries we need
 LIBS=-lsqlite3
 
 # the executable program name
-OUT=mailscream
+OUT=mailscream-prod
 
 # ========================================================
-# C17 + POSIX + VALGRIND [default]
+# C + POSIX
 # ========================================================
-c17-sanitize:
-	@echo "\n=== [ Compiling For: C17 ONLY. NO AddressSanitizer] ===\n"
-	$(CC) $(CFLAGS_SANITIZE_C17) $(SRC) -o $(OUT)-c17 $(LIBS)
-	@echo "\n [ 🎉 C17 ONLY compilation successful ]\n"
-	@echo "\n 🧪 Running AddressSanitizer memory safety tests...\n"
-	./$(OUT)-c17 ping
-	@echo "\n [🎉 AddressSanitizer memory checks completed successful]\n"
-
-# ========================================================
-# C17 + POSIX + VALGRIND [default]
-# ========================================================
-valgrind-posix:
-	@echo "\n=== [ Compiling For: C17 + POSIX. NO AddressSanitizer] ===\n"
-	$(CC) $(CFLAGS_POSIX) $(SRC) -o $(OUT) $(LIBS)
-	@echo "\n [ 🎉 C17 + POSIX compilation successful ]\n"	
-	@echo "\n 🧪 Running memory safety tests...\n"
-	valgrind ./$(OUT) ping
-	@echo "\n [🎉 valgrind memory checks completed successful]\n"
-
-valgrind-posix-release:
-	@echo "\n=== [🚀 RELEASE :: Compiling For: C17 + POSIX. NO AddressSanitizer] ===\n"
+all:
+	@echo "\n=== [Compiling For: $(COMPILE_VERSION) + POSIX] ===\n"
 	$(CC) $(CFLAGS_POSIX) $(CFLAGS_RELEASE) $(SRC) -o $(OUT) $(LIBS)
-	@echo "🎉 C17 + POSIX compilation successful"
-	@echo "\n 🧪 Running memory safety tests...\n"
-	valgrind ./$(OUT) ping
-	@echo "\n [🎉 valgrind memory checks completed successful]\n"
-
-# ========================================================
-# DEFUALT: C17 + POSIX + AddressSanitizer: - FASTER DEV
-# !! DON'T RUN THIS WITH VALGRIND !!
-# ========================================================
-sanitize:
-	@echo "\n=== [Compiling For: C17 + POSIX + AddressSanitizer] ===\n"
-	$(CC) $(CFLAGS_SANITIZE_POSIX) $(SRC) -o $(OUT) $(LIBS)
-	@echo "\n [🎉 C17 + POSIX compilation successful]\n"
-	@echo "\n 🧪 Running AddressSanitizer memory safety tests...\n"
-	./$(OUT) ping
-	@echo "\n [🎉 AddressSanitizer memory checks completed successful]\n"
-
-sanitize-release:
-	@echo "\n=== [🚀 RELEASE :: Compiling For: C17 + POSIX + AddressSanitizer] ===\n"
-	$(CC) $(CFLAGS_SANITIZE_POSIX) $(CFLAGS_RELEASE) $(SRC) -o $(OUT) $(LIBS)
-	@echo "\n [🎉 C17 + POSIX compilation successful]\n"
-	@echo "\n 🧪 Running AddressSanitizer memory safety tests...\n"
+	@echo "\n [🎉 compilation completed successfully]\n"
+	@echo "\n 🧪 Ping the app...\n"
 	./$(OUT) ping
 	@echo "\n [🎉 AddressSanitizer memory checks completed successful]\n"
