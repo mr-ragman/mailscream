@@ -10,13 +10,13 @@
 
 // random success/confirmation messages
 static const char *confirmation_messages[CONFIRMATION_COUNT] = {
-    "  BOOM. Emotional payload deployed. Breathe in… and out.",
-    "  Scream added! Deep breath… time to pretend you're okay.",
-    "  Message delivered! The scream echoes through the void.",
-    "  Filed under: catharsis > productive outbursts.",
-    "  Scream stored. May it haunt your persona forever.",
-    "  You screamed. The universe didn't flinch, but you feel lighter.",
-    "  Therapy might be cheaper, but this is louder.",
+    "\n  BOOM. Emotional payload deployed. Breathe in… and out.\n",
+    "\n  Scream added! Deep breath… time to pretend you're okay.\n",
+    "\n  Message delivered! The scream echoes through the void.\n",
+    "\n  Filed under: catharsis > productive outbursts.\n",
+    "\n  Scream stored. May it haunt your persona forever.\n",
+    "\n  You screamed. The universe didn't flinch, but you feel lighter.\n",
+    "\n  Therapy might be cheaper, but this is louder.\n",
 };
 
 const char *_get_random_confirmation()
