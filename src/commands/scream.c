@@ -10,13 +10,13 @@
 
 // random success/confirmation messages
 static const char *confirmation_messages[CONFIRMATION_COUNT] = {
-    "\n  BOOM. Emotional payload deployed. Breathe in… and out.",
-    "\n  Scream added! Deep breath… time to pretend you're okay.",
-    "\n  Message delivered! The scream echoes through the void.",
-    "\n  Filed under: catharsis > productive outbursts.",
-    "\n  Scream stored. May it haunt your persona forever.",
-    "\n  You screamed. The universe didn't flinch, but you feel lighter.",
-    "\n  Therapy might be cheaper, but this is louder.",
+    "  BOOM. Emotional payload deployed. Breathe in… and out.",
+    "  Scream added! Deep breath… time to pretend you're okay.",
+    "  Message delivered! The scream echoes through the void.",
+    "  Filed under: catharsis > productive outbursts.",
+    "  Scream stored. May it haunt your persona forever.",
+    "  You screamed. The universe didn't flinch, but you feel lighter.",
+    "  Therapy might be cheaper, but this is louder.",
 };
 
 const char *_get_random_confirmation()
@@ -93,7 +93,7 @@ static int create_scream(int argc, char **argv)
       exit(EXIT_FAILURE);
     }
 
-    snprintf(confirm_msg, required_size, "[SUCCESS] You successfully screamed at %s. They deserve it!", username);
+    snprintf(confirm_msg, required_size, "[SUCCESS] You did it! Now %s knows exactly how you feel!", username);
 
     // Step 4: maybe generate reply
     if (should_ai_reply)
