@@ -27,7 +27,7 @@ MailScream&trade; is Not just for catharsis, but for encouraging healthy emotion
 
 > "MailScream saved my job. Or at least my keyboard." — anonymous developer, post-standup meltdown
 
-## 🖥️ CLI Menu Commands
+## CLI Menu Commands
 
 ![MailScream Main Menu](images/main-menu.png)
 
@@ -93,7 +93,7 @@ make
 ./mailscream list
 
 # read a particular thread/message (by ID)
-./mailscream r 2
+./mailscream r 1
 ```
 
 Follow the menu for more exciting options! 
