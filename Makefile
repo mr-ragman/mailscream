@@ -37,7 +37,7 @@ OUT=mailscream-prod
 all:
 	@echo "\n=== [Compiling For: $(COMPILE_VERSION) + POSIX] ===\n"
 	$(CC) $(CFLAGS_POSIX) $(CFLAGS_RELEASE) $(SRC) -o $(OUT) $(LIBS)
-	@echo "\n [🎉 compilation completed successfully]\n"
-	@echo "\n 🧪 Ping the app...\n"
+	@echo "\n [ OK! Compilation completed successfully..]\n"
+	@echo "\n Ping the app...\n"
 	./$(OUT) ping
-	@echo "\n [🎉 AddressSanitizer memory checks completed successful]\n"
+	@echo "\n [ DONE! Now you can run [ ./$(OUT) ] to go to main menu!]\n"
