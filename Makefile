@@ -7,7 +7,7 @@
 
 # variables
 CC=gcc
-COMPILE_VERSION=c11
+COMPILE_VERSION ?= $(shell echo | gcc -x c -std=c17 -E - >/dev/null 2>&1 && echo "c17" || echo "c11")
 
 # Base flags - targeting C17 - change to your flavor!
 CFLAGS_BASE = -g -Wall -Wextra -O2 -Wpedantic -std=$(COMPILE_VERSION)
@@ -26,7 +26,7 @@ SRC=src/main.c src/utils/helper.c src/vault/vault.c src/commands/scream.c src/co
 # LDFLAGS=-fsanitize=address,undefined
 
 # Libraries we need
-LIBS=-lsqlite3
+LIBS=-lsqlite3 -lcurl -ljson-c #-lmicrohttpd -ljansson
 
 # the executable program name
 OUT=mailscream
