@@ -12,11 +12,13 @@ Yeah. Us too.
 
 * Send it.. Yes, SEND it - into the void.
 
-* Get roasted by your imaginary boss if you enable OpenAI (or OpenAI compatible LLM).
+* Get roasted by your imaginary boss if you enable LLM integration (OpenAI or OPENAI API compatible LLM).
 
 * Repeat as necessary.
 
 **No** servers. **No** surveillance. Just screaming and rolling into the void.
+
+## WHY?
 
 Because burnout is real, and revenge emails are best left unsent.
 
@@ -32,7 +34,10 @@ MailScream&trade; is Not just for catharsis, but for encouraging healthy emotion
 ![MailScream Main Menu](images/main-menu.png)
 
 
-## Install Dependencies:
+## Install Dependencies (Debian-based Linux distributions):
+
+**MailScream&trade;** is tested and developed on debian-based Linux distributions. But, source code is OSS, so we welcome contributions 
+to make **MailScream&trade;** available to all other Linux/Unix distributions!
 
 ```shell
 # Update system
@@ -70,7 +75,9 @@ make
 # OR Compile manually
 # gcc -D_POSIX_C_SOURCE=200809L -g -Wall -Wextra -O2 -Wpedantic -std=c11 -O2 -fstack-protector-strong -DNDEBUG src/main.c src/utils/helper.c src/vault/vault.c src/commands/scream.c src/commands/persona.c -o mailscream-prod -lsqlite3
 
-# (OPTIONAL) Set environment variables for maximum sarcasm!
+# [OPTIONAL - Enable LLM:] 
+#   - Set environment variables for maximum sarcasm!
+#   - OR, convert the .env.sample file into .env and add your details there (recommended).
 # export LLM_API_KEY="sk-123xyz"
 # export LLM_COMPLETION_URL="https://api.openai.com/v1/completions"
 
@@ -111,15 +118,15 @@ alias yell='scream --no-reply <boss_username|ID>'
 ## Now you can:
 
 ```shell
-scream username "The Jira board just gaslit me again"
-boss "Why is everything suddenly in QA?"
-yell "Not today, Satan."
+scream username 'The Jira board just gaslit me again'
+boss 'Why is everything suddenly in QA?'
+yell 'Not today, Satan.'
 ```
 
 ## Therapeutic Limits - 20 Personas
 We've capped your persona list at 20 individuals. 
 
-If you find yourself needing more than 20 different people to regularly scream at, you might want to consider:
+If you find yourself needing more than 20 different personas to regularly scream at, you might want to consider:
 
 1. **Real Therapy** 
 2. **A career change**
