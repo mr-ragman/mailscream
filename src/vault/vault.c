@@ -354,7 +354,7 @@ void free_persona(Persona *persona)
 //    Manage Messages
 // ====================
 
-int add_scream(int persona_id, const char *message)
+sqlite3_int64 add_scream(const int persona_id, const char *message)
 {
   sqlite3 *db = db_connection();
   sqlite3_stmt *stmt;
@@ -364,6 +364,33 @@ int add_scream(int persona_id, const char *message)
   {
     sqlite3_bind_int(stmt, 1, persona_id);
     sqlite3_bind_text(stmt, 2, message, -1, SQLITE_STATIC);
+
+    if (sqlite3_step(stmt) == SQLITE_DONE)
+    {
+      sqlite3_int64 last_id = sqlite3_last_insert_rowid(db);
+      sqlite3_finalize(stmt);
+      sqlite3_close(db);
+      return last_id;
+    }
+  }
+
+  sqlite3_finalize(stmt);
+  sqlite3_close(db);
+
+  return -1;
+}
+
+int add_scream_reply(const int persona_id, const int parent_message_id, const char *reply)
+{
+  sqlite3 *db = db_connection();
+  sqlite3_stmt *stmt;
+
+  const char *sql = "INSERT INTO emails (boss_id, parent_id, body) VALUES (?, ?, ?);";
+  if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
+  {
+    sqlite3_bind_int(stmt, 1, persona_id);
+    sqlite3_bind_int(stmt, 2, parent_message_id);
+    sqlite3_bind_text(stmt, 3, reply, -1, SQLITE_STATIC);
 
     if (sqlite3_step(stmt) == SQLITE_DONE)
     {

@@ -97,20 +97,25 @@ typedef struct
   int count;
 } ScreamList;
 
-// typedef struct
-// {
-//   int id;
-//   int boss_id;
-//   int parent_id;
-//   char body[256];
-// } ScreamReply;
-
+/**
+ * @internal
+ * TODO: validate args
+ * 
+ * This function adds a new scream.
+ * 
+ * @returns the last inserted ID of the scream (sqlite3_int64). -1 means failure
+ */
+sqlite3_int64 add_scream(const int persona_id, const char *message);
 
 /**
  * @internal
  * TODO: validate args
+ * 
+ * This function will add a reply from AI and associate it with the original scream
+ * 
+ * @returns status of the operation [VAULT_SUCCESS | VAULT_FAILURE]
  */
-int add_scream(int persona_id, const char *message);
+int add_scream_reply(const int persona_id, const int parent_message_id, const char *reply);
 
 ScreamList *get_screams(void);
 

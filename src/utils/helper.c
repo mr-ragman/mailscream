@@ -1,10 +1,12 @@
 #include <stdlib.h>
-#include <stdio.h>     // PATH_MAX, readlink, strdup all available
+#include <stdio.h> // PATH_MAX, readlink, strdup all available
 #include <string.h>
 #include <libgen.h>
 #include <limits.h>
-#include <unistd.h>    // POSIX - For readlink()
-#include <stdint.h>    // uint32_t and other fixed-width types
+#include <unistd.h> // POSIX - For readlink()
+#include <stdint.h> // uint32_t and other fixed-width types
+#include <sys/ioctl.h>
+#include <ctype.h>
 
 #include "helper.h"
 
@@ -28,13 +30,13 @@ void show_help()
   printf("\n " BOLD "[ More actions: ]" RESET "\n\n");
   puts("  mailscream <command> [--options] <arguments, ...>\n");
   printf("\n  \033[1;33mCommands:\033[0m\n\n");
-  printf("  \033[1;36mpersona, p\033[0m              Manage your scream personas\n");
-  puts("                          Usage: mailscream p [list | add <persona_name> 'short description' | remove <ID>]\n");
-  printf("  \033[1;36mreply, rp\033[0m               Reply to an earlier conversation/email with a given ID\n");
-  puts("                          Usage: mailscream rp <ID> 'your reply message'\n");
-  printf("  \033[1;36mread, r\033[0m                 Read the full email thread with the given ID\n");
+  printf("  \033[1;36mpersona, p\033[0m              Manage your personas. Personas are the people you want to scream to!\n");
+  puts("                          Usage: [list]    mailscream p list");
+  puts("                                 [new]     mailscream p add <persona_name> 'short description'");
+  puts("                                 [remove]  mailscream p remove <ID>\n");
+  printf("  \033[1;36mread, r\033[0m                 Read the email thread with the given ID\n");
   puts("                          Usage: mailscream r <ID>\n");
-  printf("  \033[1;36mlist, l\033[0m                 Show all your stored emails\n");
+  printf("  \033[1;36mlist, l\033[0m                 Show all your stored emails (screams)\n");
   puts("                          Usage: mailscream l\n");
   printf("  \033[1;36mvault, db \033[0m              Initialize or drop your local scream vault\n");
   puts("                          Usage: mailscream db [init | drop]\n");
@@ -89,8 +91,8 @@ void suggest_help_manual(char *command_name)
   else if (strcmp(command_name, "new") == 0)
   {
     puts(" Usage:\n");
-    puts(" - mailscream persona_username \"your scream message\"");
-    puts(" - mailscream persona_id \"your scream message\"\n");
+    puts(" - mailscream persona_username 'your scream message'");
+    puts(" - mailscream persona_id 'your scream message'\n");
   }
   else if (strcmp(command_name, "read") == 0)
   {
@@ -100,7 +102,7 @@ void suggest_help_manual(char *command_name)
   else if (strcmp(command_name, "persona") == 0)
   {
     puts("\n Usage:\n");
-    puts(" - New Persona:     mailscream p add <persona_name> \"describe your persona briefly. Do them justice!\"");
+    puts(" - New Persona:     mailscream p add <persona_name> 'describe your persona briefly. Do them justice'");
     puts(" - List Personas:   mailscream p list");
     puts(" - Remove Persona:  mailscream p remove <id>\n");
     puts(" For more options run `mailscream help`\n");
@@ -174,4 +176,109 @@ char *get_full_path(const char *suffix)
 
   free(exe_dir);
   return migration_path;
+}
+
+void load_dotenv(const char *filename)
+{
+  FILE *file = fopen(filename, "r");
+  if (!file)
+    return;
+
+  char line[256];
+  while (fgets(line, sizeof(line), file))
+  {
+    // Skip comments and empty lines
+    if (line[0] == '#' || line[0] == '\n')
+      continue;
+
+    // Find the = sign
+    char *equals = strchr(line, '=');
+    if (!equals)
+      continue;
+
+    // Split key=value
+    *equals = '\0';
+    char *key = line;
+    char *value = equals + 1;
+
+    // Remove newline from value
+    value[strcspn(value, "\r\n")] = '\0';
+
+    // Set environment variable
+    setenv(key, value, 1);
+  }
+  fclose(file);
+}
+
+int file_exists(const char *filename) {
+  return access(filename, F_OK) != -1;
+}
+
+/**
+ * Calculate the current terminal window size
+ *
+ * @return int
+ */
+int get_terminal_width()
+{
+  struct winsize w;
+  if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0)
+  {
+    return w.ws_col;
+  }
+  else
+  {
+    return 80;
+  }
+}
+
+/**
+ * Pretty prints.. ensures the text is nicely wrapped
+ */
+void print_wrapped(const char *message, int max_width, const char *indent)
+{
+  int indent_len = strlen(indent);
+  int line_len = indent_len;
+  printf("\n %s", indent);
+
+  while (*message)
+  {
+    const char *word_start = message;
+
+    // Skip whitespace
+    while (*message && isspace(*message) && *message != '\n')
+      message++;
+
+    // Find the end of the word
+    while (*message && !isspace(*message) && *message != '\n')
+      message++;
+
+    int word_len = message - word_start;
+
+    // If the word won't fit on this line, wrap to next
+    if (line_len + word_len + 1 > max_width)
+    {
+      printf("\n%s", indent);
+      line_len = indent_len;
+    }
+    else if (line_len > indent_len)
+    {
+      line_len++;
+    }
+
+    // Print the word
+    fwrite(word_start, 1, word_len, stdout);
+    line_len += word_len;
+
+    // Handle explicit newlines
+    if (*message == '\n')
+    {
+      putchar('\n');
+      printf("%s", indent);
+      line_len = indent_len;
+      message++;
+    }
+  }
+
+  putchar('\n');
 }

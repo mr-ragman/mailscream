@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <time.h>
-#include <stdlib.h>                   // for srand(), rand()
+#include <stdlib.h> // for srand(), rand()
 #include <string.h>
 
 #include "utils/helper.h"
@@ -12,6 +12,12 @@ int main(int argc, char *argv[])
 {
   // seed the RNG once. Ensures rand() functions well! #include <time.h>
   srand(time(NULL));
+
+  // Load .env file
+  if (file_exists(".env"))
+  {
+    load_dotenv(".env");
+  }
 
   // main menu: mailsream command alone
   if (argc < 2 || (argc > 1 && is_help_command(argv[1])))

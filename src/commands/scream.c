@@ -3,18 +3,20 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
+#include <sqlite3.h>
 
 #include "../utils/helper.h"
 #include "../vault/vault.h"
+#include "../llm/persona_reply.h"
 #include "scream.h"
 
 // random success/confirmation messages
 static const char *confirmation_messages[CONFIRMATION_COUNT] = {
     "\n  BOOM. Emotional payload deployed. Breathe in… and out.\n",
-    "\n  Scream added! Deep breath… time to pretend you're okay.\n",
+    "\n  Scream saved into the void! Deep breath… time to pretend you're okay.\n",
     "\n  Message delivered! The scream echoes through the void.\n",
     "\n  Filed under: catharsis > productive outbursts.\n",
-    "\n  Scream stored. May it haunt your persona forever.\n",
+    "\n  Scream stored into the void. May it haunt your persona forever.\n",
     "\n  You screamed. The universe didn't flinch, but you feel lighter.\n",
     "\n  Therapy might be cheaper, but this is louder.\n",
 };
@@ -25,12 +27,31 @@ const char *_get_random_confirmation()
   return confirmation_messages[index];
 }
 
+static void print_indented(const char *message)
+{
+  int max_width = get_terminal_width();
+  if (max_width <= 0)
+    max_width = 80;
+
+  // if interactive terminal
+  if (isatty(STDOUT_FILENO))
+  {
+    print_wrapped(message, max_width, "    ");
+  }
+  else
+  {
+    printf("    %s", message);
+  }
+
+  printf("\n\n");
+}
+
 static int create_scream(int argc, char **argv)
 {
   bool should_ai_reply = true;
-  int persona_index = 1; // without options
+  int persona_index = 1;
 
-  // if we have options
+  // if we have command options/flags
   if (strcmp(argv[1], "--no-reply") == 0 || strcmp(argv[1], "-nr") == 0)
   {
     should_ai_reply = false;
@@ -72,20 +93,16 @@ static int create_scream(int argc, char **argv)
     return 1;
   }
 
-  persona_id = persona->id;
-
-  //
+  persona_id = persona->id;  
   char *username = malloc(strlen(persona->username) + 1);
   strcpy(username, persona->username);
 
-  free_persona(persona);
-
   // Step 3: insert email
-  int result = add_scream(persona_id, message);
+  sqlite3_int64 last_id = add_scream(persona_id, message);
 
-  if (result == VAULT_SUCCESS)
+  if (last_id > 0)
   {
-    int required_size = snprintf(NULL, 0, "[SUCCESS] Your scream was successfully sent to %s!", username) + 1;
+    int required_size = snprintf(NULL, 0, "SENT! Your scream was successfully delivered to %s!", username) + 1;
     char *confirm_msg = malloc(required_size);
     if (!confirm_msg)
     {
@@ -93,21 +110,33 @@ static int create_scream(int argc, char **argv)
       exit(EXIT_FAILURE);
     }
 
-    snprintf(confirm_msg, required_size, "[SUCCESS] Now %s knows exactly how you feel!", username);
+    snprintf(confirm_msg, required_size, "SENT! %s knows exactly how you feel now!", username);
 
     // Step 4: maybe generate reply
     if (should_ai_reply)
     {
       display(confirm_msg, "");
+      printf(" ...let's see what %s has to say about that... please wait.\n", username);
 
-      /**
-       * ping LLM
-       * TODO: Hook in to MCP/LLM APIs
-       */
-      const char *ai_response = _get_random_confirmation();
+      // ping LLM
+      char *summary = generate_ai_response(
+          message,
+          username,
+          persona->persona);
 
-      printf("   " BOLD "[You]" RESET ": %s \n", message);
-      printf("\n   " BOLD "[%s]" RESET ": %s \n\n", username, ai_response);
+      if (summary != NULL)
+      {
+        (void)add_scream_reply(persona_id, last_id, summary);
+
+        printf("\n   " BOLD "[%s]" RESET ": \n", username);
+        print_indented(summary);
+      }
+      else
+      {
+        printf("\n   " BOLD "[Ooops, LLM Failed To Reply. But hey...]" RESET ": %s \n\n", _get_random_confirmation());
+      }
+
+      free(summary);
     }
     else
     {
@@ -117,9 +146,11 @@ static int create_scream(int argc, char **argv)
 
     free(confirm_msg);
     free(username);
+    free_persona(persona);
     return 0;
   }
 
+  free_persona(persona);
   free(username);
 
   // issue with database insert
@@ -139,17 +170,17 @@ int list_screams(void)
     return 1;
   }
 
-  puts("\n ------------------------------------");
-  printf(" >>   Your %d most recent screams!\n", screams->count);
-  puts(" ------------------------------------\n");
-
   if (screams->count > 0)
   {
+    puts("\n ------------------------------------");
+    printf(" >>   Your %d most recent screams!\n", screams->count);
+    puts(" ------------------------------------\n");
+
     display_screams_list_table(screams);
   }
   else
   {
-    display("[Hey!] No vents to see here!", "Got someone to scream at today?\n");
+    display("Oops! No vents to see here.", "=> Got someone to scream at today?\n");
     suggest_help_manual("new");
     puts("");
   }
@@ -172,18 +203,18 @@ int read_scream(int argc, char **argv)
 
   if (scream == NULL)
   {
-    display("[Hey!] No vents to see here!", "Got someone to scream at today?\n");
+    display("Oops! No vents to see here!", "Got someone to scream at today?\n");
     suggest_help_manual("new");
     free_scream(scream);
     return 1;
   }
 
-  puts("\n ------------------------------------");
-  printf(" >> You are viewing a scream ID: %d!\n", atoi(argv[2]));
-  puts(" ------------------------------------");
-
   if (scream->scream_id > 0)
   {
+    puts("\n ------------------------------------");
+    printf(" >> You are viewing a scream ID: %d!\n", atoi(argv[2]));
+    puts(" ------------------------------------");
+
     print_scream_and_replies(scream);
   }
   else
@@ -274,8 +305,8 @@ void display_screams_list_table(const ScreamList *scream_list)
 
 static void print_scream_reply(ScreamReply *scream_reply)
 {
-  printf("  ↳ From: %s @ %s\n", scream_reply->username, scream_reply->created_at);
-  printf("    %s\n\n", scream_reply->message);
+  printf("  ↳  " BOLD "[From: %s]" RESET " on %s\n", scream_reply->username, scream_reply->created_at);
+  print_indented(scream_reply->message);
   free(scream_reply->message);
 }
 
@@ -298,7 +329,8 @@ void print_scream_and_replies(Scream *scream)
   {
     for (int j = 0; j < scream->total_replies; j++)
     {
-      if ((&scream->replies[j])->scream_id > 0) {
+      if ((&scream->replies[j])->scream_id > 0)
+      {
         print_scream_reply(&scream->replies[j]);
       }
     }
@@ -307,6 +339,4 @@ void print_scream_and_replies(Scream *scream)
   {
     printf("(No replies)\n");
   }
-
-  printf("\n===================================================\n\n");
 }
