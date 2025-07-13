@@ -76,8 +76,9 @@ make
 # gcc -D_POSIX_C_SOURCE=200809L -g -Wall -Wextra -O2 -Wpedantic -std=c11 -O2 -fstack-protector-strong -DNDEBUG src/main.c src/utils/helper.c src/vault/vault.c src/commands/scream.c src/commands/persona.c -o mailscream-prod -lsqlite3
 
 # [OPTIONAL - Enable LLM:] 
-#   - Set environment variables for maximum sarcasm!
-#   - OR, convert the .env.sample file into .env and add your details there (recommended).
+cp .env.sample .env         # Then, update the .env file with your details (any OPENAI API compatible LLM should work!)
+
+### Alternatively, export variables directly
 # export LLM_API_KEY="sk-123xyz"
 # export LLM_COMPLETION_URL="https://api.openai.com/v1/completions"
 
