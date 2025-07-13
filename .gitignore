@@ -25,6 +25,7 @@ modules/
 *.csv
 *.db
 *.log
+.env
 
 # autotools outputs
 Makefile.in
